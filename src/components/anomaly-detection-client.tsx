@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { AlertTriangle, Bot, CheckCircle, Loader2 } from 'lucide-react';
+import { defaultTrafficData } from '@/lib/mock-data';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -44,6 +45,7 @@ export function AnomalyDetectionClient() {
             placeholder="Paste network traffic logs here..."
             className="font-code text-xs h-32"
             required
+            defaultValue={defaultTrafficData}
           />
         </div>
         <div className="flex items-center space-x-2">
