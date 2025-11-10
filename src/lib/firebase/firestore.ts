@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from '@/lib/firebase/config';
@@ -25,6 +26,8 @@ export async function getRecentAnomalies(count: number = 10): Promise<DetectNetw
         anomalyDetected: data.anomalyDetected,
         anomalyDescription: data.anomalyDescription,
         confidenceScore: data.confidenceScore,
+        isGenuineAttack: data.isGenuineAttack,
+        attackClassification: data.attackClassification,
       });
     });
     return anomalies;
@@ -33,3 +36,4 @@ export async function getRecentAnomalies(count: number = 10): Promise<DetectNetw
     return []; // Return empty array on error
   }
 }
+

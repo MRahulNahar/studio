@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -10,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { AlertTriangle, Bot, CheckCircle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle, Loader2, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { defaultTrafficData } from '@/lib/mock-data';
 
 function SubmitButton() {
@@ -34,6 +35,7 @@ export function AnomalyDetectionClient() {
 
   const confidenceValue = state.data?.confidenceScore ? state.data.confidenceScore * 100 : 0;
   const isAnomaly = state.data?.anomalyDetected;
+  const isAttack = state.data?.isGenuineAttack;
   
   return (
     <div className="flex-grow flex flex-col justify-between">
@@ -84,6 +86,15 @@ export function AnomalyDetectionClient() {
                     {state.data.anomalyDescription}
                 </AlertDescription>
             </Alert>
+             {isAnomaly && (
+                <Alert variant={isAttack ? "destructive" : "default"}>
+                    {isAttack ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                    <AlertTitle>{isAttack ? `Genuine Attack (${state.data.attackClassification})` : "Not a Genuine Attack"}</AlertTitle>
+                    <AlertDescription>
+                        {isAttack ? `The model classified this anomaly as a ${state.data.attackClassification} attack.` : state.data.attackClassification}
+                    </AlertDescription>
+                </Alert>
+            )}
             <div>
                 <div className="flex justify-between items-center mb-1">
                     <Label htmlFor="confidence">Confidence Score</Label>
