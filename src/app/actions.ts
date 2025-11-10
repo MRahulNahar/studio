@@ -1,6 +1,19 @@
 'use server';
 
-import { detectNetworkAnomaly, type DetectNetworkAnomalyInput } from '@/ai/flows/adaptive-anomaly-detection';
+import { detectNetworkAnomaly, type DetectNetworkAnomalyInput, type DetectNetworkAnomalyOutput } from '@/ai/flows/adaptive-anomaly-detection';
+import { db } from '@/lib/firebase/config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+async function addAnomaly(anomaly: DetectNetworkAnomalyOutput) {
+  try {
+    await addDoc(collection(db, 'anomalies'), {
+      ...anomaly,
+      timestamp: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Error adding document: ', error);
+  }
+}
 
 export async function getAnomalyDetection(
   prevState: any,
@@ -21,6 +34,9 @@ export async function getAnomalyDetection(
   
   try {
     const result = await detectNetworkAnomaly(input);
+    if (result.anomalyDetected) {
+      await addAnomaly(result);
+    }
     return { data: result, error: null };
   } catch (error) {
     console.error(error);
