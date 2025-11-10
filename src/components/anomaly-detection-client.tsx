@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getAnomalyDetection } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,7 @@ const initialState = {
 };
 
 export function AnomalyDetectionClient() {
-  const [state, formAction] = useFormState(getAnomalyDetection, initialState);
+  const [state, formAction] = useActionState(getAnomalyDetection, initialState);
   const [useBaseline, setUseBaseline] = React.useState(false);
 
   const confidenceValue = state.data?.confidenceScore ? state.data.confidenceScore * 100 : 0;
