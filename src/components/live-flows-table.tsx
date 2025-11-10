@@ -40,13 +40,14 @@ const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-function FlowRow({ flow, openRow, onToggle, stateHistory }: { flow: Flow, openRow: string | null, onToggle: (id: string) => void, stateHistory: Map<string, Flow['state'][]> }) {
+function FlowRow({ flow, openRow, onToggle, stateHistory, index }: { flow: Flow, openRow: string | null, onToggle: (id: string) => void, stateHistory: Map<string, Flow['state'][]>, index: number }) {
   const isOpen = openRow === flow.id;
   const history = stateHistory.get(flow.id) || [flow.state];
 
   return (
     <>
       <TableRow className="cursor-pointer" onClick={() => onToggle(flow.id)}>
+        <TableCell className="text-muted-foreground w-[40px] text-right">{index + 1}</TableCell>
         <TableCell>
           <Button variant="ghost" size="icon" className="h-8 w-8">
             {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -66,7 +67,7 @@ function FlowRow({ flow, openRow, onToggle, stateHistory }: { flow: Flow, openRo
       </TableRow>
       {isOpen && (
         <TableRow>
-          <TableCell colSpan={8}>
+          <TableCell colSpan={9}>
             <div className="p-4 bg-muted/50 rounded-md">
               <h4 className="font-semibold mb-2">State Transition History</h4>
               <div className="flex items-center gap-2 flex-wrap font-code text-sm">
@@ -138,6 +139,7 @@ export function LiveFlowsTable() {
           <Table>
             <TableHeader className="sticky top-0 bg-background">
               <TableRow>
+                <TableHead className="w-[40px]">#</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Destination</TableHead>
@@ -150,10 +152,10 @@ export function LiveFlowsTable() {
             </TableHeader>
             <TableBody>
               {flows.length > 0 ? (
-                flows.map(flow => <FlowRow key={flow.id} flow={flow} openRow={openRow} onToggle={handleToggleRow} stateHistory={stateHistory} />)
+                flows.map((flow, index) => <FlowRow key={flow.id} flow={flow} openRow={openRow} onToggle={handleToggleRow} stateHistory={stateHistory} index={index} />)
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
+                  <TableCell colSpan={9} className="h-24 text-center">
                     No active flows.
                   </TableCell>
                 </TableRow>
