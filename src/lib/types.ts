@@ -18,11 +18,10 @@ export type ProtocolStat = {
   fill: string;
 };
 
-export type Anomaly = {
+export type Alert = {
   id: string;
   timestamp: Date;
-  anomalyDescription: string;
-  confidenceScore: number;
-  isGenuineAttack: boolean;
-  attackClassification: string;
+  severity: 'info' | 'warning' | 'critical';
+  message: string;
+  flowId?: string;
 };

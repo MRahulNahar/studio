@@ -14,7 +14,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { getRecentAnomalies } from '@/lib/firebase/firestore';
 
 const DetectNetworkAnomalyInputSchema = z.object({
   networkTrafficData: z
@@ -48,15 +47,6 @@ const DetectNetworkAnomalyOutputSchema = z.object({
 });
 export type DetectNetworkAnomalyOutput = z.infer<typeof DetectNetworkAnomalyOutputSchema>;
 
-// We need a schema for the prompt that includes the historical anomalies.
-const DetectNetworkAnomalyPromptSchema = DetectNetworkAnomalyInputSchema.extend({
-    historicalAnomalies: z.array(z.object({ // Only use a subset for the prompt context
-      anomalyDescription: z.string(),
-      confidenceScore: z.number(),
-    })).optional().describe('An array of previously detected anomalies to learn from.')
-});
-
-
 export async function detectNetworkAnomaly(
   input: DetectNetworkAnomalyInput
 ): Promise<DetectNetworkAnomalyOutput> {
@@ -65,16 +55,15 @@ export async function detectNetworkAnomaly(
 
 const detectNetworkAnomalyPrompt = ai.definePrompt({
   name: 'detectNetworkAnomalyPrompt',
-  input: {schema: DetectNetworkAnomalyPromptSchema},
+  input: {schema: DetectNetworkAnomalyInputSchema},
   output: {schema: DetectNetworkAnomalyOutputSchema},
-  prompt: `You are a network security expert tasked with analyzing network traffic data for anomalies and classifying them. You learn over time.
+  prompt: `You are a network security expert tasked with analyzing network traffic data for anomalies and classifying them.
 
-  You are provided with new network traffic data, an optional baseline of normal network behavior, and a list of historical anomalies that have been detected in the past.
-  Your goal is to identify any deviations from the norm, taking into account past findings. Then, you must classify the anomaly.
+  You are provided with new network traffic data and an optional baseline of normal network behavior.
+  Your goal is to identify any deviations from the norm.
 
   Step 1: Anomaly Detection
   Analyze the provided network traffic data and compare it to the baseline network behavior, if provided. If a baseline is not provided, attempt to establish one from the data.
-  Consider the historical anomalies provided. Use them as examples of what has been considered anomalous before. This will help you to be more accurate. If you see similar patterns, you should flag them. Also, look for new types of anomalies that haven't been seen before.
 
   Network Traffic Data:
   {{networkTrafficData}}
@@ -84,15 +73,6 @@ const detectNetworkAnomalyPrompt = ai.definePrompt({
   {{baselineNetworkBehavior}}
   {{else}}
   No baseline network behavior provided. Attempting to learn it from the above data.
-  {{/if}}
-
-  Historical Anomalies (for learning):
-  {{#if historicalAnomalies}}
-  {{#each historicalAnomalies}}
-  - Description: {{this.anomalyDescription}}, Confidence: {{this.confidenceScore}}
-  {{/each}}
-  {{else}}
-  No historical anomalies provided yet. You are establishing the first baseline.
   {{/if}}
 
   Based on your analysis, determine whether an anomaly is present in the *new* network traffic data. Provide a description of the anomaly, if detected, and a confidence score indicating the certainty of your detection.
@@ -113,22 +93,7 @@ const detectNetworkAnomalyFlow = ai.defineFlow(
     outputSchema: DetectNetworkAnomalyOutputSchema,
   },
   async input => {
-    // Fetch recent anomalies from Firestore to provide as context for learning.
-    const historicalAnomalies = await getRecentAnomalies(10);
-    
-    // We only need a subset of fields for the prompt context, to keep it clean.
-    const promptContextAnomalies = historicalAnomalies.map(a => ({
-      anomalyDescription: a.anomalyDescription,
-      confidenceScore: a.confidenceScore,
-    }));
-
-    const promptInput = {
-      ...input,
-      historicalAnomalies: promptContextAnomalies,
-    };
-
-    const {output} = await detectNetworkAnomalyPrompt(promptInput);
+    const {output} = await detectNetworkAnomalyPrompt(input);
     return output!;
   }
 );
-
