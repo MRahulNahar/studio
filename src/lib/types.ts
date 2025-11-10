@@ -12,24 +12,8 @@ export type Flow = {
   bytes: number;
 };
 
-export type Alert = {
-  id: string;
-  timestamp: Date;
-  severity: 'info' | 'warning' | 'critical';
-  message: string;
-  flowId?: string;
-};
-
 export type ProtocolStat = {
   name: string;
   value: number;
   fill: string;
 };
-
-export type Anomaly = {
-  id?: string;
-  timestamp: any;
-  anomalyDetected: boolean;
-  anomalyDescription: string;
-  confidenceScore: number;
-}
