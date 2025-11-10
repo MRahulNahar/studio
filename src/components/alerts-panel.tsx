@@ -23,6 +23,11 @@ const severityColors: Record<Alert['severity'], string> = {
 
 export function AlertsPanel() {
   const [alerts] = React.useState<Alert[]>(initialAlerts);
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <Card className="h-full flex flex-col">
@@ -41,7 +46,7 @@ export function AlertsPanel() {
                     <p className="text-sm font-medium leading-none">{alert.message}</p>
                     <div className="flex items-center justify-between mt-1">
                         <p className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(alert.timestamp, { addSuffix: true })}
+                            {isClient ? formatDistanceToNow(alert.timestamp, { addSuffix: true }) : ''}
                         </p>
                         {alert.flowId && <Badge variant="secondary">Flow: {alert.flowId}</Badge>}
                     </div>
