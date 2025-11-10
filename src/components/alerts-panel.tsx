@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import type { Alert } from '@/lib/types';
-import { getAnomalies } from '@/lib/firebase/firestore';
+import { getAnomalies } from '@/lib/firebase/firestore-client';
 
 const severityIcons: Record<Alert['severity'], React.ReactNode> = {
   info: <Info className="h-5 w-5 text-sky-500" />,
