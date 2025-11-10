@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -12,6 +13,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { addAnomaly } from '@/lib/firebase/firestore';
 
 const DetectNetworkAnomalyInputSchema = z.object({
   networkTrafficData: z
@@ -80,6 +82,9 @@ const detectNetworkAnomalyFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await detectNetworkAnomalyPrompt(input);
+    if (output && output.anomalyDetected) {
+      await addAnomaly(output);
+    }
     return output!;
   }
 );

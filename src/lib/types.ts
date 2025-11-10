@@ -1,3 +1,4 @@
+
 export type Flow = {
   id: string;
   protocol: 'TCP' | 'UDP' | 'HTTP' | 'DNS';
@@ -24,3 +25,11 @@ export type ProtocolStat = {
   value: number;
   fill: string;
 };
+
+export type Anomaly = {
+  id?: string;
+  timestamp: any;
+  anomalyDetected: boolean;
+  anomalyDescription: string;
+  confidenceScore: number;
+}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import type { Alert } from '@/lib/types';
-import { initialAlerts } from '@/lib/mock-data';
+import { getAnomalies } from '@/lib/firebase/firestore';
 
 const severityIcons: Record<Alert['severity'], React.ReactNode> = {
   info: <Info className="h-5 w-5 text-sky-500" />,
@@ -21,43 +22,27 @@ const severityColors: Record<Alert['severity'], string> = {
   critical: 'border-l-red-500',
 };
 
-const possibleMessages: { message: string, severity: Alert['severity']}[] = [
-    { message: "New device connected from unexpected IP range.", severity: 'info'},
-    { message: "High number of DNS queries for non-existent domains.", severity: 'warning'},
-    { message: "Potential TCP SYN flood attack detected.", severity: 'critical'},
-    { message: "Malformed packet detected in flow.", severity: 'warning'},
-    { message: "Connection timeout anomaly.", severity: 'info'},
-];
-
 export function AlertsPanel() {
-  const [alerts, setAlerts] = React.useState<Alert[]>(initialAlerts);
+  const [alerts, setAlerts] = React.useState<Alert[]>([]);
 
   React.useEffect(() => {
-    const interval = setInterval(() => {
-        const randomMsg = possibleMessages[Math.floor(Math.random() * possibleMessages.length)];
-        const newAlert: Alert = {
-            id: `alert_${Date.now()}`,
-            timestamp: new Date(),
-            severity: randomMsg.severity,
-            message: `${randomMsg.message} (flow_${Math.floor(Math.random() * 20)})`,
-            flowId: `flow_${Math.floor(Math.random() * 20)}`
-        };
-      setAlerts(prev => [newAlert, ...prev].slice(0, 20));
-    }, 7000);
-
-    return () => clearInterval(interval);
+    const unsubscribe = getAnomalies(setAlerts);
+    return () => unsubscribe();
   }, []);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Alert Panel</CardTitle>
-        <CardDescription>Protocol violations and anomalies.</CardDescription>
+        <CardDescription>Protocol violations and anomalies from the database.</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[250px] w-full">
           <div className="space-y-4">
-            {alerts.map((alert, index) => (
+            {alerts.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No anomalies detected yet.</p>
+            ) : (
+              alerts.map((alert, index) => (
               <React.Fragment key={alert.id}>
                 <div className={`flex items-start gap-4 p-3 border-l-4 ${severityColors[alert.severity]}`}>
                   <div className="mt-1">{severityIcons[alert.severity]}</div>
@@ -70,7 +55,8 @@ export function AlertsPanel() {
                 </div>
                 {index < alerts.length - 1 && <Separator />}
               </React.Fragment>
-            ))}
+            ))
+            )}
           </div>
         </ScrollArea>
       </CardContent>
