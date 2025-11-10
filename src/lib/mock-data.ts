@@ -34,11 +34,11 @@ export const initialAlerts: Alert[] = [
 ];
 
 export const protocolStats: ProtocolStat[] = [
-  { name: 'TCP', value: 400, fill: 'var(--color-chart-1)' },
-  { name: 'UDP', value: 300, fill: 'var(--color-chart-2)' },
-  { name: 'HTTP', value: 200, fill: 'var(--color-chart-3)' },
-  { name: 'DNS', value: 278, fill: 'var(--color-chart-4)' },
-  { name: 'Other', value: 189, fill: 'var(--color-chart-5)' },
+  { name: 'TCP', value: 400, fill: 'hsl(204 100% 40%)' },
+  { name: 'UDP', value: 300, fill: 'hsl(25 95% 53%)' },
+  { name: 'HTTP', value: 200, fill: 'hsl(120 80% 35%)' },
+  { name: 'DNS', value: 278, fill: 'hsl(320 70% 50%)' },
+  { name: 'Other', value: 189, fill: 'hsl(60 70% 45%)' },
 ];
 
 export const defaultTrafficData = `14:32:01.123456 IP 192.168.1.10.54321 > 8.8.8.8.53: 1234+ A? google.com. (28)
