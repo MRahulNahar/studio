@@ -17,3 +17,12 @@ export type ProtocolStat = {
   value: number;
   fill: string;
 };
+
+export type Anomaly = {
+  id: string;
+  timestamp: Date;
+  anomalyDescription: string;
+  confidenceScore: number;
+  isGenuineAttack: boolean;
+  attackClassification: string;
+};

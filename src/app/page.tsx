@@ -1,4 +1,5 @@
 import { AnomalyDetection } from '@/components/anomaly-detection';
+import { AlertsPanel } from '@/components/alerts-panel';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { LiveFlowsTable } from '@/components/live-flows-table';
 import { ProtocolDistributionChart } from '@/components/protocol-distribution-chart';
@@ -11,8 +12,9 @@ export default function DashboardPage() {
         <div className="xl:col-span-3">
           <LiveFlowsTable />
         </div>
-        <div className="xl:col-span-2">
-          <AnomalyDetection />
+        <div className="xl:col-span-2 grid grid-rows-2 gap-6">
+            <AnomalyDetection />
+            <AlertsPanel />
         </div>
         <div className="xl:col-span-1">
           <ProtocolDistributionChart />
